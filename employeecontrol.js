@@ -29,8 +29,10 @@ connection.connect(function(err) {
         choices: [
           "View All Employees",
           "Add Employee",
-          "Add Department",
+          "View Roles",
           "Add Role",
+          "View Departments",
+          "Add Department",
           "Update Employee Role",
           "Exit"
         ]
@@ -45,9 +47,17 @@ connection.connect(function(err) {
         case "Add Employee":
           addEmp();
           break;
+
+          case "View Roles":
+          viewRoles();
+          break;
   
         case "Add Role":
           addRole();
+          break;
+
+        case "View Departments":
+          viewDept();
           break;
   
         case "Add Department":
@@ -132,12 +142,22 @@ function addEmp() {
         }
       );
     });
-}
+};
 
-// function to handle posting new Employee
+// function to view all Roles
+function viewRoles() {
+  connection.query("SELECT * FROM role", function (err, result) {
+      if (err) throw err;
+
+      console.table("", result);
+  });
+  runSearch();
+};
+
+// function to handle posting new Role
 function addRole() {
 
-  // prompt for info about the new employee
+  // prompt for info about the new Role
   inquirer
     .prompt([
       {
@@ -153,7 +173,89 @@ function addRole() {
       {
         name: "deptid",
         type: "input",
-        message: "What is the new department ID?",
+        message: "What is the new department ID Must be a number greater than 4?",
+      },
+    ])
+    .then(function(answer) {
+
+      // let query = "SELECT * role.department_id WHERE  ?"
+      // if(answer.deptid === connection.query(query, department_id)) {
+      //   console.log("Department ID already exists");
+      // }else{
+      // when finished prompting, insert a new item into the db with that info
+      connection.query(
+
+        "INSERT INTO role SET ?",
+        {
+          title: answer.title,
+          salary: answer.salary,
+          department_id: deptId
+        },
+        function(err) {
+          if (err) throw err;
+          console.log("Your new role was created successfully!");
+          // re-prompt the user for if they want would like to do
+          runSearch();
+        }
+      );
+    });
+};
+// function to view departments
+function viewDept() {
+  connection.query("SELECT * FROM department", function (err, result) {
+      if (err) throw err;
+
+      console.table("", result);
+  });
+  runSearch();
+}
+
+// function to handle adding a new department
+function addDept() {
+
+  // prompt for info about the new department
+  inquirer
+    .prompt([
+      {
+        name: "department",
+        type: "input",
+        message: "What is the new departments name?"
+      },
+    ])
+    .then(function(answer) {
+      // when finished prompting, insert a new item into the db with that info
+      connection.query(
+
+        "INSERT INTO department SET ?",
+        {
+          department_name: answer.department,
+        },
+        function(err) {
+          if (err) throw err;
+          console.log("Your new department was created successfully!");
+          // re-prompt the user for if they want to bid or post
+          runSearch();
+        }
+      );
+    });
+}
+
+// function to handle posting new Employee
+function upRole() {
+
+  // prompt for info about the new employee
+  inquirer
+    .prompt([
+      {
+        name: "roleid",
+        type: "rawlist",
+        message: "What is the employees new role?",
+        choices: [
+          "SR Engineer",
+          "Software Engineer",
+          "SR Accountant",
+          "Accountant"
+        ]
       },
     ])
     .then(function(answer) {
@@ -172,18 +274,22 @@ function addRole() {
       // when finished prompting, insert a new item into the db with that info
       connection.query(
 
-        "INSERT INTO role SET ?",
+        "INSERT INTO employee SET ?",
         {
-          title: answer.title,
-          salary: answer.salary,
-          department_id: answer.deptid
+          first_name: answer.firstName,
+          last_name: answer.lastName,
+          role_id: roleId
         },
         function(err) {
           if (err) throw err;
           console.log("Your employee was created successfully!");
-          // re-prompt the user for if they want to bid or post
+          // re-prompt the user for what they would like to do.
           runSearch();
         }
       );
     });
 }
+
+function exit(){
+  process.exit()
+};
