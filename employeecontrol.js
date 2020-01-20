@@ -127,7 +127,7 @@ function addEmp() {
         function(err) {
           if (err) throw err;
           console.log("Your employee was created successfully!");
-          // re-prompt the user for if they want to bid or post
+          // re-prompt the user for what they would like to do.
           runSearch();
         }
       );
