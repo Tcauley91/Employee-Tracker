@@ -1,0 +1,28 @@
+{
+  "name": "mysql-homework-employee-tracker",
+  "version": "1.0.0",
+  "description": "employee tracker",
+  "main": "employeecontrol.js",
+  "scripts": {
+    "test": "test"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Tcauley91/MySQL-Homework-Employee-Tracker.git"
+  },
+  "keywords": [
+    "emp",
+    "tracker"
+  ],
+  "author": "Tyler Cauley",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/Tcauley91/MySQL-Homework-Employee-Tracker/issues"
+  },
+  "homepage": "https://github.com/Tcauley91/MySQL-Homework-Employee-Tracker#readme",
+  "dependencies": {
+    "console.table": "^0.10.0",
+    "inquirer": "^7.0.3",
+    "mysql": "^2.17.1"
+  }
+}
