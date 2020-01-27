@@ -18,6 +18,7 @@ const connection = mysql.createConnection({
 
 connection.connect(function(err) {
     if (err) throw err;
+
     runSearch();
   });
   function runSearch() {
@@ -33,7 +34,7 @@ connection.connect(function(err) {
           "Add Role",
           "View Departments",
           "Add Department",
-          "Update Employee Role",
+          "Update Role",
           "Exit"
         ]
       })
@@ -56,16 +57,16 @@ connection.connect(function(err) {
           addRole();
           break;
 
+        case "Update Role":
+          upRole();
+          break;
+
         case "View Departments":
           viewDept();
           break;
   
         case "Add Department":
           addDept();
-          break;
-
-        case "Update Employees Role":
-          upRole();
           break;
 
         case "Exit":
@@ -177,12 +178,6 @@ function addRole() {
       },
     ])
     .then(function(answer) {
-
-      // let query = "SELECT * role.department_id WHERE  ?"
-      // if(answer.deptid === connection.query(query, department_id)) {
-      //   console.log("Department ID already exists");
-      // }else{
-      // when finished prompting, insert a new item into the db with that info
       connection.query(
 
         "INSERT INTO role SET ?",
@@ -200,6 +195,62 @@ function addRole() {
       );
     });
 };
+
+// function to handle posting new Employee
+function upRole() {
+// Query database for all roles
+connection.query("SELECT * FROM role", function(err, results){
+  if (err) throw err;
+  // Once the roles are displayed, propmt for which one they would like to update.
+  inquirer
+    .prompt([
+      {
+      name: "oldRole",
+      type: "rawlist",
+      choices: function(){
+        var roleArray = [];
+        for (var i = 0; i < results.length; i++) {
+          roleArray.push(results[i].title);
+      }
+      return roleArray;
+      },
+      message: "What Role would you like to update?"
+    },
+    {
+        name: "newRole",
+        type: "input",
+        message: "What would you like to update the Role to?"
+        
+      }
+    ])
+    .then(function(answer){
+      // get information from chosen role
+      var chosenRole;
+      for (var i = 0; i < results.length; i++) {
+        if (results[i].role == answer.oldRole) {
+          chosenRole = results[i];
+        }
+      }
+      // Check to make sure role name does not already exist
+      if(chosenRole === answer.oldTitle){
+        // Role does not already exist
+        connection.query(
+          "UPDATE role SET ? WHERE ?",
+          [
+            {
+              title: answer.newRole
+            }
+          ],
+          function(error) {
+            if (error) throw err;
+            console.log("Role updated successfully");
+            runSearch();
+    
+          }
+        )};
+    });
+});
+}
 // function to view departments
 function viewDept() {
   connection.query("SELECT * FROM department", function (err, result) {
@@ -233,62 +284,12 @@ function addDept() {
         function(err) {
           if (err) throw err;
           console.log("Your new department was created successfully!");
-          // re-prompt the user for if they want to bid or post
-          runSearch();
-        }
-      );
-    });
-}
-
-// function to handle posting new Employee
-function upRole() {
-
-  // prompt for info about the new employee
-  inquirer
-    .prompt([
-      {
-        name: "roleid",
-        type: "rawlist",
-        message: "What is the employees new role?",
-        choices: [
-          "SR Engineer",
-          "Software Engineer",
-          "SR Accountant",
-          "Accountant"
-        ]
-      },
-    ])
-    .then(function(answer) {
-
-      let roleId = answer.roleid;
-
-      if(answer.roleid === "SR Engineer"){
-        roleId = 1;
-      }else if(answer.roleid === "Software Engineer"){
-        roleId = 2;
-      }else if(answer.roleid === "SR Accountant"){
-        roleId = 3;
-      }else if(answer.roleid === "Accountant"){
-        roleId = 4;
-      }
-      // when finished prompting, insert a new item into the db with that info
-      connection.query(
-
-        "INSERT INTO employee SET ?",
-        {
-          first_name: answer.firstName,
-          last_name: answer.lastName,
-          role_id: roleId
-        },
-        function(err) {
-          if (err) throw err;
-          console.log("Your employee was created successfully!");
           // re-prompt the user for what they would like to do.
           runSearch();
         }
       );
     });
-}
+};
 
 function exit(){
   process.exit()
