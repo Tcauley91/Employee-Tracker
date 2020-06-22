@@ -1,4 +1,4 @@
-# MySQL-Homework-Employee-Tracker
+# MySQL-Employee-Tracker
 
 Using the MySQL NPM package to connect to your MySQL database and perform queries.
 
